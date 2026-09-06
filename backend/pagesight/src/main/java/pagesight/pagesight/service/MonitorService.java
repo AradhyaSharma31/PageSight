@@ -107,18 +107,34 @@ public class MonitorService {
         String html = pageFetchService.fetchHtml(monitor.getUrl());
 
         boolean anyChanged = false;
-        for (ElementSelector selector : monitor.getElementSelectors()) {
-            String newContent = changeDetectionService.extractContent(html, selector.getSelectorPath());
-            boolean changed = changeDetectionService.hasChanged(selector.getLastContentSnapshot(), newContent);
+        List<ElementSelector> selectors = monitor.getElementSelectors();
 
-            checkLogRepository.save(new CheckLog(monitor, selector, changed));
+        if (selectors == null || selectors.isEmpty()) {
+            // Whole-page monitoring
+            String newContent = changeDetectionService.extractContent(html, null);
+            boolean changed = changeDetectionService.hasChanged(monitor.getLastContentSnapshot(), newContent);
 
-            selector.setLastContentSnapshot(newContent);
-            selector.setLastCheckedAt(LocalDateTime.now());
-            elementSelectorRepository.save(selector);
+            checkLogRepository.save(new CheckLog(monitor, null, changed));
 
+            monitor.setLastContentSnapshot(newContent);
             if (changed) {
                 anyChanged = true;
+            }
+        } else {
+            // Element-scoped monitoring
+            for (ElementSelector selector : selectors) {
+                String newContent = changeDetectionService.extractContent(html, selector.getSelectorPath());
+                boolean changed = changeDetectionService.hasChanged(selector.getLastContentSnapshot(), newContent);
+
+                checkLogRepository.save(new CheckLog(monitor, selector, changed));
+
+                selector.setLastContentSnapshot(newContent);
+                selector.setLastCheckedAt(LocalDateTime.now());
+                elementSelectorRepository.save(selector);
+
+                if (changed) {
+                    anyChanged = true;
+                }
             }
         }
 

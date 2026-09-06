@@ -21,8 +21,7 @@ public class ElementSelector {
     @Column(name = "label", length = 150)
     private String label;
 
-    @Lob
-    @Column(name = "last_content_snapshot")
+    @Column(name = "last_content_snapshot", columnDefinition = "TEXT")
     private String lastContentSnapshot;
 
     @Column(name = "last_checked_at")

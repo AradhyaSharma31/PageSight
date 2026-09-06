@@ -7,7 +7,7 @@ public final class HtmlDiffUtil {
 
     public static boolean hasChanged(String previousContent, String newContent) {
         if (previousContent == null) {
-            return newContent != null && !newContent.isBlank();
+            return false;
         }
         return !normalize(previousContent).equals(normalize(newContent));
     }

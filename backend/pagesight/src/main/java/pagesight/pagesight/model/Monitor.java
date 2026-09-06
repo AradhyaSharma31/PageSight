@@ -39,11 +39,17 @@ public class Monitor {
     @Column(name = "last_checked_at")
     private LocalDateTime lastCheckedAt;
 
+    @Column(name = "last_content_snapshot", columnDefinition = "TEXT")
+    private String lastContentSnapshot;
+
     @OneToMany(mappedBy = "monitor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ElementSelector> elementSelectors = new ArrayList<>();
 
     @OneToMany(mappedBy = "monitor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CheckLog> checkLogs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "monitor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications = new ArrayList<>();
 
     public Monitor() {
     }
@@ -139,7 +145,19 @@ public class Monitor {
         return checkLogs;
     }
 
-    public void setCheckLogs(List<CheckLog> checkLogs) {
-        this.checkLogs = checkLogs;
+    public String getLastContentSnapshot() {
+        return lastContentSnapshot;
+    }
+
+    public void setLastContentSnapshot(String lastContentSnapshot) {
+        this.lastContentSnapshot = lastContentSnapshot;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 }
